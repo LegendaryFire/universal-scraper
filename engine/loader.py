@@ -51,5 +51,8 @@ class Loader():
             else:
                 raise UnknownModuleTypeError(f"Unable to determine module type of {module.__name__.capitalize()}")
 
-    def get_modules():
-        pass
+    def get_plugins(self):
+        return self._plugins
+    
+    def get_notifiers(self):
+        return self._notifiers
