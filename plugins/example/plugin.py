@@ -1,8 +1,7 @@
+from engine.notifier import Notifier
 
-from engine.plugin import Plugin
 
-
-class Example(Plugin):
+class Example(Notifier):
     def __init__(self):
         print("An instance of the example module has been created.")
         super().__init__()
