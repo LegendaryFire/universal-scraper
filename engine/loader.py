@@ -9,13 +9,16 @@ import logging
 logging.basicConfig(format='[%(levelname)s] %(asctime)s: %(message)s', level=logging.INFO)
 log = logging.getLogger(__name__)
 
+
 class UnknownModuleTypeError(Exception):
     pass
+
 
 @dataclass
 class EntryPoint:
     name: str
     script: Path
+
 
 class Loader():
     def _discover_plugins(self) -> list[EntryPoint]:
@@ -52,7 +55,9 @@ class Loader():
                 raise UnknownModuleTypeError(f"Unable to determine module type of {module.__name__.capitalize()}")
 
     def get_plugins(self):
+        """Returns a list of all loaded plugin modules."""
         return self._plugins
     
     def get_notifiers(self):
+        """Returns a list of all loaded notifier modules."""
         return self._notifiers
