@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 import time
+from tkinter import Image
 from fake_useragent import UserAgent
 import requests
 import logging
@@ -34,3 +36,23 @@ class Plugin():
     def stop(self):
         self._running = False
         log.info(f"Module {self.__class__.__name__} shutting down")
+
+
+@dataclass
+class Message:
+    title: str
+    message: str
+    image: str | None
+    extra: dict | None
+    
+
+class Notifier():
+    def __init__(self):
+        self._session = requests.Session()
+
+    def send_notification(self, message: Message, user) -> bool:
+        pass
+
+    @staticmethod
+    def parse_message(data) -> Message:
+        pass

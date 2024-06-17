@@ -1,10 +1,10 @@
 import sys
 from importlib import util
 from pathlib import Path
-from dataclasses import dataclass
-from engine.plugin import Plugin
-from engine.notifier import Notifier
 import logging
+import yaml
+from dataclasses import dataclass
+from engine.plugin import Plugin, Notifier
 
 
 log = logging.getLogger(__name__)
@@ -21,10 +21,15 @@ class EntryPoint:
 
 
 class Loader():
-    def _discover_plugins(self) -> list[EntryPoint]:
-        """Scans the plugins directory and finds the entrypoint to each plugin."""
+    def _load_config(self):
+        """Loads the configuration file."""
+        with open('config.yml', 'r') as file:
+            self._config = yaml.safe_load(file)
+
+    def _discover_modules(self) -> list[EntryPoint]:
+        """Scans the modules directory and finds the entrypoint to each plugin."""
         results = []
-        path = Path("./plugins")
+        path = Path("./modules")
         for dir in [x for x in path.iterdir() if x.is_dir()]:
             script = dir.joinpath("plugin.py")
             if script.is_file():
@@ -40,10 +45,10 @@ class Loader():
         log.info(f"Module {module.__name__} loaded successfully")
         return module
 
-    def __init__(self):
-        self._plugins = []
-        self._notifiers = []
-        entrypoints = self._discover_plugins()
+    
+    def _sort_modules(self):
+        """Sorts modules into their appropriate category."""
+        entrypoints = self._discover_modules()
         for entrypoint in entrypoints:
             module = self._load_module(entrypoint)
             object_module = getattr(module, module.__name__.capitalize())
@@ -53,6 +58,13 @@ class Loader():
                 self._notifiers.append(object_module)
             else:
                 raise UnknownModuleTypeError(f"Unable to determine module type of {module.__name__.capitalize()}")
+
+    
+    def __init__(self):
+        self._config = None
+        self._plugins = []
+        self._notifiers = []
+
 
     def get_plugins(self):
         """Returns a list of all loaded plugin modules."""

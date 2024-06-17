@@ -1,0 +1,6 @@
+modules:
+  example:
+    notifier: pushover
+  pushover:
+    token: token_here
+    user: user_here
