@@ -1,7 +1,5 @@
-from celery import Celery
-
-celery = Celery('scheduler', broker='redis://localhost')
-
+import threading
+import time
 
 class Scheduler:
     def _instantiate_module(self, module):
@@ -12,6 +10,14 @@ class Scheduler:
     def __init__(self, modules) -> None:
         self._modules = modules
         self._instances = []
+        self._threads = []
         for module in modules:
             instance = self._instantiate_module(module)
-            celery.task(instance.run, module.__name__)
+            thread = threading.Thread(target=instance.run)
+            self._threads.append(thread)
+            thread.start()
+        time.sleep(5)
+        for instance in self._instances:
+            instance.stop()
+        time.sleep(5)
+

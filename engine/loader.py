@@ -6,7 +6,7 @@ from engine.plugin import Plugin
 from engine.notifier import Notifier
 import logging
 
-logging.basicConfig(format='[%(levelname)s] %(asctime)s: %(message)s', level=logging.INFO)
+
 log = logging.getLogger(__name__)
 
 
