@@ -10,12 +10,14 @@ log = logging.getLogger(__name__)
 
 class Plugin():
     def __init__(self, adapter=None, user_agent=None):
-        log.info(f"Module {self.__class__.__name__} initialized")
+        log.info(f"Module {self.__class__.__name__.lower()} initialized")
         self._session = requests.Session()
         self._adapter = requests.adapters.HTTPAdapter(max_retries=3)
         self._session.mount('https://', (adapter or self._adapter))
         self._user_agent = (user_agent or UserAgent().random)
         self._running = False
+        self._storage = None
+        self._notifier = None
 
     def request_json(self, url, params=None, headers=None):
         headers = { } if not headers else headers
@@ -23,19 +25,30 @@ class Plugin():
         resp = self._session.request("get", url, params=params, headers=headers)
         return resp.json()
 
+    def set_storage_engine(self, instance):
+        self._storage = instance
+
+    def set_notifier_engine(self, instance):
+        self._notifier = instance
+
     def parse(self, item):
         pass
 
     def run(self):
+        if not self._storage:
+            log.warning(f"No storage engine set for {self.__class__.__name__.lower()} plugin.")
+        if not self._notifier:
+            log.warning(f"No notifier engine set for {self.__class__.__name__.lower()} plugin.")
+
         self._running = True
         while self._running:
-            log.info(f"{self.__class__} I am running!")
+            log.info(f"{self.__class__.__name__} I am running!")
             time.sleep(1)
         
 
     def stop(self):
         self._running = False
-        log.info(f"Module {self.__class__.__name__} shutting down")
+        log.info(f"Module {self.__class__.__name__.lower()} shutting down")
 
 
 @dataclass

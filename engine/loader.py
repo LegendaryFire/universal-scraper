@@ -46,9 +46,8 @@ class Loader():
         return module
 
     
-    def _sort_modules(self):
+    def _sort_modules(self, entrypoints: list[EntryPoint]):
         """Sorts modules into their appropriate category."""
-        entrypoints = self._discover_modules()
         for entrypoint in entrypoints:
             module = self._load_module(entrypoint)
             object_module = getattr(module, module.__name__.capitalize())
@@ -64,6 +63,8 @@ class Loader():
         self._config = None
         self._plugins = []
         self._notifiers = []
+        entrypoints = self._discover_modules()
+        self._sort_modules(entrypoints)
 
 
     def get_plugins(self):
