@@ -12,10 +12,10 @@ class Pushover(Notifier):
         self._user = kwargs['user']
         self._link = 'https://api.pushover.net/1/messages.json'
 
-    def send_notification(self, message: Message, user) -> bool:
+    def send_notification(self, message: Message) -> bool:
         data = {
             'token': self._token,
-            'user': user,
+            'user': self._user,
             'title': message.title,
             'message': message.message,
         }

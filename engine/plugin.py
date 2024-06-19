@@ -68,8 +68,8 @@ class Plugin():
 class Message:
     title: str
     message: str
-    image: str | None
-    extra: dict | None
+    image: str | None = None
+    extra: dict | None = None
     
 
 class Notifier():
@@ -77,7 +77,7 @@ class Notifier():
         log.info(f"Notifier {self.__class__.__name__.lower()} initialized")
         self._session = requests.Session()
 
-    def send_notification(self, message: Message, user) -> bool:
+    def send_notification(self, message: Message) -> bool:
         pass
 
     @staticmethod
