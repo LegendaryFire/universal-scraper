@@ -8,3 +8,4 @@ log = logging.getLogger(__name__)
 if __name__ == "__main__":
     loader = Loader()
     scheduler = Scheduler(loader)
+    scheduler.loop_forever()

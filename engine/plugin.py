@@ -9,12 +9,12 @@ import logging
 log = logging.getLogger(__name__)
 
 class Plugin():
-    def __init__(self, adapter=None, user_agent=None):
-        log.info(f"Module {self.__class__.__name__.lower()} initialized")
+    def __init__(self):
+        log.info(f"Plugin {self.__class__.__name__.lower()} initialized")
         self._session = requests.Session()
         self._adapter = requests.adapters.HTTPAdapter(max_retries=3)
-        self._session.mount('https://', (adapter or self._adapter))
-        self._user_agent = (user_agent or UserAgent().random)
+        self._session.mount('https://', self._adapter)
+        self._user_agent = UserAgent().random
         self._running = False
         self._storage = None
         self._notifier = None
@@ -42,8 +42,10 @@ class Plugin():
 
         self._running = True
         while self._running:
-            log.info(f"{self.__class__.__name__} I am running!")
-            time.sleep(1)
+            self.task()
+
+    def task(self):
+        pass
         
 
     def stop(self):
@@ -61,6 +63,7 @@ class Message:
 
 class Notifier():
     def __init__(self):
+        log.info(f"Notifier {self.__class__.__name__.lower()} initialized")
         self._session = requests.Session()
 
     def send_notification(self, message: Message, user) -> bool:

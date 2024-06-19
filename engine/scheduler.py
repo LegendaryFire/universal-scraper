@@ -25,7 +25,6 @@ class Scheduler:
             if 'notifier' in plugin.config:
                 notifier = self._loader.get_notifier_by_name(plugin.config['notifier'])
                 plugin.config['notifier'] = notifier.instance
-
             plugin.instance = plugin.cls(**plugin.config)
 
     def __init__(self, loader: Loader) -> None:
@@ -35,13 +34,12 @@ class Scheduler:
         self._instantiate_notifiers()
         self._instantiate_plugins()
 
-    def run(self):
-        for module in self._modules:
-            instance = self._instantiate_module(module)
-            thread = threading.Thread(target=instance.run)
+    def loop_forever(self):
+        for module in self._loader.get_plugins():
+            thread = threading.Thread(target=module.instance.run)
             self._threads.append(thread)
             thread.start()
-        time.sleep(5)
-        for instance in self._instances:
-            instance.stop()
-        time.sleep(5)
+
+    def stop(self):
+        for module in self._loader.get_plugins():
+            module.instance.stop()
