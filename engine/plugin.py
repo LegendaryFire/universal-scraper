@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import time
-from tkinter import Image
 from fake_useragent import UserAgent
 import requests
 import logging
@@ -9,7 +8,7 @@ import logging
 log = logging.getLogger(__name__)
 
 class Plugin():
-    def __init__(self):
+    def __init__(self, **kwargs):
         log.info(f"Plugin {self.__class__.__name__.lower()} initialized")
         self._session = requests.Session()
         self._adapter = requests.adapters.HTTPAdapter(max_retries=3)
@@ -18,6 +17,8 @@ class Plugin():
         self._running = False
         self._storage = None
         self._notifier = None
+        self._run_interval = kwargs.get('run_interval', str())
+        self._run_interval = self._run_interval if type(self._run_interval) is int else None
 
     def request_json(self, url, params=None, headers=None):
         headers = { } if not headers else headers
@@ -42,7 +43,17 @@ class Plugin():
 
         self._running = True
         while self._running:
+            start_time = time.perf_counter()
             self.task()
+            end_time = time.perf_counter()
+            duration = end_time - start_time
+            if self._run_interval and duration > self._run_interval:
+                log.warning(f"Consider increasing run interval, unable to complete task in time by {(duration - self._run_interval):.2f}s")
+            elif self._run_interval:
+                time_remaining = self._run_interval - duration
+                log.info(f"Plugin {self.__class__.__name__.lower()} task finished in {duration:.2f}s, waiting {time_remaining:.2f}s")
+                time.sleep(time_remaining)
+
 
     def task(self):
         pass
@@ -50,7 +61,7 @@ class Plugin():
 
     def stop(self):
         self._running = False
-        log.info(f"Module {self.__class__.__name__.lower()} shutting down")
+        log.info(f"Plugin {self.__class__.__name__.lower()} shutting down")
 
 
 @dataclass

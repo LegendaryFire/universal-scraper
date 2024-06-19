@@ -22,9 +22,11 @@ class Scheduler:
                 raise InvalidModuleOrderError("All notifiers must be instantiated before instantiating plugins")
 
         for plugin in self._loader.get_plugins():
-            if 'notifier' in plugin.config:
+            if isinstance(plugin.config, dict) and 'notifier' in plugin.config:
                 notifier = self._loader.get_notifier_by_name(plugin.config['notifier'])
                 plugin.config['notifier'] = notifier.instance
+            else:
+                plugin.config = dict()
             plugin.instance = plugin.cls(**plugin.config)
 
     def __init__(self, loader: Loader) -> None:
@@ -39,6 +41,9 @@ class Scheduler:
             thread = threading.Thread(target=module.instance.run)
             self._threads.append(thread)
             thread.start()
+
+        for thread in self._threads:
+            thread.join()
 
     def stop(self):
         for module in self._loader.get_plugins():
