@@ -112,4 +112,5 @@ class Loader():
         for notifier in notifiers:
             if notifier.name == name:
                 return notifier
+        log.warning(f"Module {name} could not be found")
         return None

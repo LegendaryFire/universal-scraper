@@ -2,6 +2,7 @@ import threading
 import time
 
 from engine.loader import Loader
+from plugin import Notifier
 
 class InvalidModuleOrderError(Exception):
     pass
@@ -24,7 +25,9 @@ class Scheduler:
         for plugin in self._loader.get_plugins():
             if isinstance(plugin.config, dict) and 'notifier' in plugin.config:
                 notifier = self._loader.get_notifier_by_name(plugin.config['notifier'])
-                plugin.config['notifier'] = notifier.instance
+                # Ensure a notifier plugin was found before attempting to create an instance
+                if notifier:
+                    plugin.config['notifier'] = notifier.instance
             else:
                 plugin.config = dict()
             plugin.instance = plugin.cls(**plugin.config)

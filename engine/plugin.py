@@ -37,9 +37,9 @@ class Plugin():
 
     def run(self):
         if not self._storage:
-            log.warning(f"No storage engine set for {self.__class__.__name__.lower()} plugin.")
+            log.warning(f"No storage engine set for {self.__class__.__name__.lower()} plugin")
         if not self._notifier:
-            log.warning(f"No notifier engine set for {self.__class__.__name__.lower()} plugin.")
+            log.warning(f"No notifier engine set for {self.__class__.__name__.lower()} plugin")
 
         self._running = True
         while self._running:
