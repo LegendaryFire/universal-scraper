@@ -2,7 +2,6 @@ import threading
 import time
 
 from engine.loader import Loader
-from plugin import Notifier
 
 class InvalidModuleOrderError(Exception):
     pass
